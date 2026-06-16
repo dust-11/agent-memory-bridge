@@ -35,6 +35,9 @@ Built for—and battle-tested in—the [Hermes Agent](https://github.com/NousRes
 - **🔍 Smart routing** – Short queries → shallow memory; long queries → deep memory with semantic scoring
 - **🏷️ Auto-classification** – New memories are automatically classified by type (core/emotion) and depth (deep/shallow)
 - **⚓ Anchor system** – Related memories are grouped under semantic anchors; conflict detection on write
+- **⭐ Weighted scoring** – Search results ranked by `semantic_similarity × weight`, combining relevance with priority. Cold-start resistant (weight-dominant) with graceful transition to hybrid sorting
+- **📊 Memory stats** – Built-in diagnostics (`memory-stats`) show anchor counts, weight distribution, and decay activity
+- **🎯 Anchor activity tracking** – Search hits automatically update anchor `last_active_at`, enabling inactivity-based decay and dormant detection
 - **🧊 Archive mechanism** – Cold data is automatically archived, searchable, and restorable
 - **🗑️ Recycle bin** – Deleted memories go to a recycle bin with restore capability
 - **🔒 Fully local** – No external services, no vector database, no data leaves your machine
@@ -80,7 +83,9 @@ archive <id>     Archive an anchor
 unarchive <id>   Restore from archive
 auto-archive     Auto-archive based on age/size
 archive-list     List archived anchors
+archive-stats    Archive statistics
 archive-search   Search within archives
+memory-stats     System diagnostics (anchors, weights, decay)
 ```
 
 ## `write` Input Format

@@ -1,13 +1,16 @@
-# Database files
+# Dependencies
+node_modules/
+
+# SQLite database files
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
-*.sqlite3
 
 # Logs
 *.log
 
 # Runtime data
-node_modules/
 .env
 *.local
 

@@ -16,7 +16,7 @@
  */
 
 const { writeMemory } = require('./lib/memory.js');
-const { getMemory, queryMemories, search, searchDeep, listAnchors, searchAnchors, listSummary, getAnchor } = require('./lib/search.js');
+const { getMemory, queryMemories, search, searchDeep, listAnchors, searchAnchors, listSummary, getAnchor, getDb } = require('./lib/search.js');
 const { deleteMemory, batchDelete, expireShallow, listRecycle, restoreFromRecycle } = require('./lib/delete.js');
 const { archiveAnchor, unarchiveAnchor, searchArchive, listArchive, archiveStats, autoArchive } = require('./lib/archive.js');
 
@@ -156,9 +156,28 @@ async function main() {
         out(searchArchive(query));
         break;
       }
-      
+
+      case 'memory-stats': {
+        const db = getDb();
+        const stats = {};
+        stats.activeAnchors = db.prepare("SELECT COUNT(*) as c FROM anchors WHERE status = 'active'").get().c;
+        stats.dormantAnchors = db.prepare("SELECT COUNT(*) as c FROM anchors WHERE status = 'dormant'").get().c;
+        stats.totalMemories = db.prepare("SELECT COUNT(*) as c FROM memories").get().c;
+        stats.decayLogToday = db.prepare("SELECT COUNT(*) as c FROM decay_log WHERE timestamp >= datetime('now', 'start of day')").get().c;
+        stats.weightDistribution = db.prepare(`
+          SELECT depth, type,
+            ROUND(AVG(weight),3) as avg_w,
+            ROUND(MIN(weight),3) as min_w,
+            ROUND(MAX(weight),3) as max_w,
+            COUNT(*) as count
+          FROM memories GROUP BY depth, type
+        `).all();
+        out(stats);
+        break;
+      }
+
       default:
-        out({ error: '未知命令: ' + cmd, usage: 'write|search|query|anchors|summary|get|delete|archive|unarchive|...' });
+        out({ error: 'unknown command: ' + cmd, usage: 'write|search|search-deep|query|anchors|anchor|summary|get|delete|batch-delete|expire|recycle|restore|archive|unarchive|auto-archive|archive-list|archive-stats|archive-search|memory-stats' });
     }
   } catch (e) {
     out({ error: e.message, stack: e.stack });
