@@ -107,6 +107,17 @@ memory-stats     System diagnostics (anchors, weights, decay)
 - If `type` is omitted, the classifier auto-detects it
 - Conflict detection runs automatically on write; flagged anchors are returned in response but not blocked
 
+## ⚠️ Note on the Content Filter
+
+`lib/classifier.js` decides `type` (core/emotion) and `depth` (deep/shallow) with a **keyword + pattern rule set**. It also acts as a gate: content whose classification confidence falls below the threshold is **rejected with `filtered: true`** instead of being stored.
+
+That rule set was tuned for a specific personal memory corpus (Chinese, with vocabulary like 思维教训 / 技术选型 / 落地闭环 / 情感). **Generic content may therefore be filtered out as "no substantial content" on a fresh install** — this is the classifier's threshold, not a crash.
+
+To use it with your own style of notes, either:
+
+- extend the keyword/pattern lists in `lib/classifier.js`, or
+- lower the confidence threshold in `lib/memory.js` (the check that produces `filterReason`).
+
 ## Requirements
 
 - **Node.js 18+**
