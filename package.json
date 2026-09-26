@@ -1,0 +1,36 @@
+{
+  "name": "agent-memory-bridge",
+  "version": "3.0.0",
+  "description": "A lightweight, tiered persistent memory system for AI agents. Three-layer architecture with semantic routing, cross-agent sharing, and full privacy control.",
+  "main": "bridge.js",
+  "type": "commonjs",
+  "bin": {
+    "memory-bridge": "./bridge.js"
+  },
+  "scripts": {
+    "start": "node bridge.js",
+    "test": "node test/smoke.js"
+  },
+  "keywords": [
+    "ai-agent",
+    "memory",
+    "llm",
+    "sqlite",
+    "rag",
+    "agent-memory",
+    "persistent-memory"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "nodejieba": "^3.4.4",
+    "uuid": "^10.0.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dust-11/agent-memory-bridge.git"
+  }
+}

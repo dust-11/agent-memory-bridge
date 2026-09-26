@@ -45,8 +45,8 @@ Built for—and battle-tested in—the [Hermes Agent](https://github.com/NousRes
 ## Quick Start
 
 ```bash
-# Install dependencies
-npm install better-sqlite3
+# Install dependencies (declared in package.json)
+npm install
 
 # Write a memory
 node bridge.js write '{"content":"User prefers concise CLI outputs","source":"agent","type":"core"}'
@@ -107,12 +107,47 @@ memory-stats     System diagnostics (anchors, weights, decay)
 - If `type` is omitted, the classifier auto-detects it
 - Conflict detection runs automatically on write; flagged anchors are returned in response but not blocked
 
-## Environment
+## Requirements
 
-- Node.js 18+
-- SQLite via `better-sqlite3`
+- **Node.js 18+**
 - No external databases, no vector stores, no cloud services
+
+The SQLite database (`memory.db`) is **created automatically on first run** — schema, tables and indexes are initialized by `lib/db.js`. You do not need to create it by hand.
+
+## Dependencies
+
+All runtime dependencies are declared in `package.json`:
+
+| Package | Purpose | License | Install |
+|---------|---------|---------|---------|
+| [`better-sqlite3`](https://github.com/WiseLibs/better-sqlite3) | SQLite driver (synchronous, WAL mode) | MIT | `npm install` |
+| [`nodejieba`](https://github.com/yanyiwu/nodejieba) | Chinese word segmentation (used by `lib/search.js`) | MIT | `npm install` |
+| [`uuid`](https://github.com/uuidjs/uuid) | Memory ID generation | MIT | `npm install` |
+
+> `nodejieba` ships a native addon. On Linux/macOS it compiles or downloads a prebuilt binary automatically; on Windows you may need build tools. If you only use English content, you can replace the tokenizer in `lib/search.js`.
+
+## What Is NOT Included
+
+This repository contains **only the core memory engine** — storage, classification, anchors, archiving and the recycle bin. The following are **pluggable external capabilities** and are deliberately not bundled:
+
+- **Vector / semantic search (e.g. zvec)** — the upstream deployment uses an external vector index. This repo ships a TF-IDF / keyword fallback inside `lib/search.js`. Bring your own embedding backend if you need true semantic recall.
+- **BM25 full-text ranking** — not bundled; `lib/search.js` implements a lighter keyword-scoring path.
+- **Anchor classification via LLM** — assigning memories to semantic anchors through a large language model requires **your own API key and prompt**. No prompt, key, endpoint or model configuration is included here.
+- **No API keys, no credentials, no private data** — nothing of that kind is shipped in this repository.
+
+`lib/search.js` is written so these can be swapped in later — search is intentionally the most modular layer.
+
+## Credits & Third-Party Works
+
+This project stands on the shoulders of the following open-source works:
+
+- [**better-sqlite3**](https://github.com/WiseLibs/better-sqlite3) by WiseLibs — MIT
+- [**nodejieba**](https://github.com/yanyiwu/nodejieba) by Yanyiwu — MIT
+- [**uuid**](https://github.com/uuidjs/uuid) by the uuid.js authors — MIT
+- Chinese segmentation dictionary conventions follow the [jieba](https://github.com/fxsjy/jieba) project — MIT
+
+No third-party source code is vendored into this repository; all of the above are consumed as regular npm dependencies and remain under their own licenses.
 
 ## License
 
-Apache 2.0
+Apache 2.0 — see [`LICENSE`](LICENSE).
